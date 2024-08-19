@@ -37,9 +37,6 @@ public class PlayerMovement : MonoBehaviour
     {
         GroundCheck();
         Gravity();
-        if (playerControls.Player.Jump.triggered) {
-            DoubleJump(); // Call DoubleJump method when jump action is triggered
-        }
     }
 
     void Jump() {
@@ -47,13 +44,17 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isJumping = true;
             isGrounded = false;
+        } else if (!isGrounded && doubleJumpsUsed < maxDoubleJumps) {
+            DoubleJump();
         }
     }
 
     void GroundCheck() {
         isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, groundLayer);
-        isJumping = false;
-        doubleJumpsUsed = 0;
+        if (isGrounded) {
+            isJumping = false;
+            doubleJumpsUsed = 0; // Reset double jump count when grounded
+        }
     }
     void Gravity() {
         if (rb.velocity.y < 0) { // Falling
@@ -72,7 +73,6 @@ public class PlayerMovement : MonoBehaviour
         if (!isGrounded && doubleJumpsUsed < maxDoubleJumps) {
             rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z); // Reset vertical velocity before double jumping
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            //isJumping = true;
             // Increase amount of jumps used
             doubleJumpsUsed++;
         }
