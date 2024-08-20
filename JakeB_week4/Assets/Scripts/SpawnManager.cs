@@ -5,11 +5,11 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     public GameObject[] obstaclePrefabs;
-    private Vector3 spawnPosition = new Vector3(25, 0, 0);
+    private Vector3 spawnPosition = new Vector3(65, 0, 0);
 
     void Start()
     {
-        InvokeRepeating("SpawnObstacles", 3, 3);
+        InvokeRepeating("SpawnObstacles", 3, 20);
     }
 
 
