@@ -428,9 +428,11 @@ GameObject:
   - component: {fileID: 8631623290024829005}
   - component: {fileID: 6044640798395719202}
   - component: {fileID: 413173370183439183}
+  - component: {fileID: 287539629369907682}
+  - component: {fileID: 2165469855440346748}
   m_Layer: 0
   m_Name: PBR_Golem
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -523,6 +525,33 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &287539629369907682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5277641153363353762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b367f617c9cd5174f9d2393c7a157ea2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyStats: {fileID: 11400000, guid: db49e733c810f1c45b74ccf5a0b7ba41, type: 2}
+  itemPrefabs:
+  - {fileID: 2211789263793384571, guid: 6c8165ee0a597f847b0808d027bbbf0b, type: 3}
+--- !u!114 &2165469855440346748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5277641153363353762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec68a36f85d70054a86bfa59091d8f03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6153637085673005771
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,6 +15,12 @@ public class WeaponHandler : MonoBehaviour {
                 // Apply damage and knockback
                 enemyAI.TakeDamage(weaponStats.damage, knockbackDirection, weaponStats.knockBack);
             }
+        } else if (other.CompareTag("EnemyPart")) { // For multipart enemies
+            DamageRelay damageRelay = other.GetComponent<DamageRelay>();
+            if (damageRelay != null) {
+                Vector3 knockbackDirection = other.transform.position - transform.position;
+                damageRelay.dragonAI.TakeDamage(weaponStats.damage, knockbackDirection, weaponStats.knockBack);
+            }
         }
     }
 }

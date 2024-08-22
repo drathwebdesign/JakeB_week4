@@ -140,9 +140,11 @@ GameObject:
   - component: {fileID: 8516321379539003510}
   - component: {fileID: 7822935953511035177}
   - component: {fileID: 2848262184092380355}
+  - component: {fileID: 8739260448138640720}
+  - component: {fileID: 554504929942159596}
   m_Layer: 0
   m_Name: Swarm08
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -235,6 +237,33 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0.3, z: 0}
+--- !u!114 &8739260448138640720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600291701556532673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b367f617c9cd5174f9d2393c7a157ea2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyStats: {fileID: 11400000, guid: 4ee8776e97f38c84fb8fbea32cfa2350, type: 2}
+  itemPrefabs:
+  - {fileID: 2211789263793384571, guid: 6c8165ee0a597f847b0808d027bbbf0b, type: 3}
+--- !u!114 &554504929942159596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600291701556532673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec68a36f85d70054a86bfa59091d8f03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2845146949110270728
 GameObject:
   m_ObjectHideFlags: 0

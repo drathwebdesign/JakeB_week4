@@ -1,10 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class EnemyAI : MonoBehaviour
-{
+public class DragonAI : MonoBehaviour {
+
     public EnemyStats enemyStats;
     private int currentHealth;
     private Rigidbody rb;
@@ -15,21 +14,20 @@ public class EnemyAI : MonoBehaviour
     private bool isDieing;
     private bool isAttacking;
 
-    void Start()
-    {
+    void Start() {
         currentHealth = enemyStats.maxHealth;
         rb = GetComponent<Rigidbody>();
     }
 
 
-    void Update()
-    {
+    void Update() {
         if (isDieing) return;
     }
-    
+
     void OnCollisionEnter(Collision collision) {
         if (collision.transform.tag == "Player") {
-            isAttacking = true; {
+            isAttacking = true;
+            {
                 PlayerMovement playerMovement = collision.transform.GetComponent<PlayerMovement>();
                 playerMovement.TakeDamage(enemyStats.damage); // Deal damage based on stats
             }
@@ -54,12 +52,13 @@ public class EnemyAI : MonoBehaviour
 
         isDieing = true;
         isAttacking = false;
-        CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>(); {
+/*        CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
+        {
             capsuleCollider.enabled = false;
-        }
+        }*/
 
         DropItems();
-        Destroy(gameObject, 1f);
+        Destroy(gameObject, 5f);
     }
 
     private void DropItems() {

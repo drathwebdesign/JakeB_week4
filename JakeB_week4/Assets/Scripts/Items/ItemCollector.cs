@@ -17,7 +17,7 @@ public class ItemCollector : MonoBehaviour {
         ItemCollectable itemPickup = collision.gameObject.GetComponent<ItemCollectable>();
         if (itemPickup != null) {
             CollectItem(itemPickup);
-            Destroy(collision.gameObject);
+            //Destroy(collision.gameObject);
         }
     }
 
