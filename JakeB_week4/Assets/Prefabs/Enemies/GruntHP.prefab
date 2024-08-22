@@ -284,6 +284,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyStats: {fileID: 11400000, guid: 19076d8bb4773a443b9ddee7eb17fb06, type: 2}
+  itemPrefabs:
+  - {fileID: 2211789263793384571, guid: 6c8165ee0a597f847b0808d027bbbf0b, type: 3}
 --- !u!114 &3181609018215378409
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -159,6 +159,12 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public void Heal(int amount) {
+        currentHealth += amount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        UpdateHealthUI();
+    }
+
     private void UpdateHealthUI() {
         if (healthBarImage != null) {
             // Update the fill amount of the health bar

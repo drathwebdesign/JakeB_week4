@@ -9,6 +9,8 @@ public class EnemyAI : MonoBehaviour
     private int currentHealth;
     private Rigidbody rb;
 
+    public GameObject[] itemPrefabs;
+
     //Animations
     private bool isDieing;
     private bool isAttacking;
@@ -53,7 +55,17 @@ public class EnemyAI : MonoBehaviour
 
         isDieing = true;
         isAttacking = false;
+
+        DropItems();
         Destroy(gameObject, 1f);
+    }
+
+    private void DropItems()
+    {
+        foreach (GameObject itemPrefab in itemPrefabs)
+        {
+            Instantiate(itemPrefab, transform.position, itemPrefab.transform.rotation);
+        }
     }
 
     //Animation fields
