@@ -1,28 +1,116 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DragonAI : MonoBehaviour {
 
     public EnemyStats enemyStats;
     private int currentHealth;
     private Rigidbody rb;
+    private SpawnManager spawnManager;
+    //HP slider
+    public Slider bossHealthSlider;
+    private CanvasGroup sliderCanvasGroup;
+
+    //Dragon Attacks
+
+    // Attack Cooldown
+    public float attackCooldown = 3f;
+    private bool isAttackOnCooldown = false;
+
+    public ParticleSystem flameAttackParticles;
+
 
     public GameObject[] itemPrefabs;
 
     //Animations
     private bool isDieing;
     private bool isAttacking;
+    private bool isAttackingFlame;
 
     void Start() {
         currentHealth = enemyStats.maxHealth;
         rb = GetComponent<Rigidbody>();
+        // Find the SpawnManager in the scene
+        spawnManager = FindObjectOfType<SpawnManager>();
+        sliderCanvasGroup = bossHealthSlider.GetComponent<CanvasGroup>();
+
+        // Find the DragonHealthSlider in the scene and initialize it
+        bossHealthSlider = GameObject.Find("BossHealthSlider").GetComponent<Slider>();
+        if (bossHealthSlider != null) {
+            bossHealthSlider.maxValue = enemyStats.maxHealth; // Set the max value to Dragon's max health
+            bossHealthSlider.value = currentHealth; // Set the initial value
+            // Hide the slider initially by setting the alpha to 0
+            if (sliderCanvasGroup != null) {
+                sliderCanvasGroup.alpha = 1; // Fully transparent
+            }
+        }
+
+        // Pause spawning as soon as the DragonAI is spawned
+        if (spawnManager != null) {
+            spawnManager.PauseSpawning();
+        }
     }
 
 
     void Update() {
         if (isDieing) return;
+        // Update the health slider's value if it's active
+        if (bossHealthSlider != null) {
+            bossHealthSlider.value = currentHealth;
+        }
+        // Here you can add logic to decide when to call different attacks
+        // For now, we just call the flame attack manually (for example purposes)
+        if (!isAttackOnCooldown) {
+            StartCoroutine(FlameAttack());
+        }
     }
+
+    // DRAGON ATTACKS
+
+    //Flame Attack
+    public IEnumerator FlameAttack() {
+        if (isDieing || isAttackOnCooldown) yield break; // Do nothing if already dieing
+
+        // Activate the flame attack particle system
+        if (flameAttackParticles != null) {
+            var emission = flameAttackParticles.emission;
+            emission.rateOverTime = 250f; // Set to desired emission rate
+            flameAttackParticles.Play();
+        }
+
+        isAttackingFlame = true;
+
+        yield return new WaitForSeconds(3f); // Duration of the flame attack
+
+        // Deactivate the particle system after the attack
+        if (flameAttackParticles != null) {
+            var emission = flameAttackParticles.emission;
+            emission.rateOverTime = 0f; // Stop emitting new particles
+            flameAttackParticles.Stop();
+        }
+        // Set attack on cooldown
+        isAttackOnCooldown = true;
+        isAttackingFlame = false;
+
+        // Wait for the cooldown period before allowing another attack
+        yield return new WaitForSeconds(attackCooldown);
+
+        isAttackOnCooldown = false;
+    }
+
+    public void OnParticleCollision(GameObject other) {
+        Debug.Log("Particle collided with: " + other.name);
+        if (other.CompareTag("Player")) {
+            Debug.Log("Applying damage to player");
+            PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
+            if (playerMovement != null) {
+                playerMovement.TakeDamage(enemyStats.damage); // Apply damage to the player
+            }
+        }
+    }
+
 
     void OnCollisionEnter(Collision collision) {
         if (collision.transform.tag == "Player") {
@@ -40,7 +128,7 @@ public class DragonAI : MonoBehaviour {
 
         currentHealth -= damage;
         //knockback
-        rb.AddForce(knockbackDirection.normalized * knockbackForce, ForceMode.Impulse);
+        //rb.AddForce(knockbackDirection.normalized * knockbackForce, ForceMode.Impulse);
 
         if (currentHealth <= 0) {
             Die();
@@ -52,16 +140,26 @@ public class DragonAI : MonoBehaviour {
 
         isDieing = true;
         isAttacking = false;
-/*        CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
-        {
-            capsuleCollider.enabled = false;
-        }*/
+
+        /*        CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
+                {
+                    capsuleCollider.enabled = false;
+                }*/
 
         DropItems();
+        // Re-enable spawning of maps after DragonAI is destroyed
+        if (spawnManager != null) {
+            spawnManager.ResumeSpawning();
+        }
+        // Hide the health slider once the Dragon is defeated
+        if (sliderCanvasGroup != null) {
+            sliderCanvasGroup.alpha = 0; // Make the slider invisible again
+        }
+
         Destroy(gameObject, 5f);
     }
 
-    private void DropItems() {
+        private void DropItems() {
         float heightOffset = 1.0f; // Adjust this value as needed
         Vector3 spawnPosition = transform.position + new Vector3(0, heightOffset, 0);
 
@@ -77,5 +175,8 @@ public class DragonAI : MonoBehaviour {
     }
     public bool IsAttacking() {
         return isAttacking;
+    }
+    public bool IsAttackingFlame() {
+        return isAttackingFlame;
     }
 }

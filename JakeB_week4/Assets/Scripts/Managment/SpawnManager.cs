@@ -8,28 +8,37 @@ public class SpawnManager : MonoBehaviour {
 
     private int mapSpawnCount = 0; //track how many maps have been spawned
     private bool specialMapSpawned = false; // Flag to check if the special map has been spawned
+    private bool isPaused = false;
 
     void Start() {
-        InvokeRepeating("SpawnObstacles", 3, 20); // Starts the spawning process
+        InvokeRepeating("SpawnMaps", 3, 20); // Starts the spawning process
     }
 
     void Update() {
         // Additional logic can be placed here if needed
     }
 
-    void SpawnObstacles() {
-        GameObject obstacleToSpawn;
+    void SpawnMaps() {
+        if (isPaused) return; // Do not spawn anything if paused
+
+        mapSpawnCount++;
 
         if (mapSpawnCount >= 10 && !specialMapSpawned) {
-            // Spawn the special map after 10 random spawns
-            obstacleToSpawn = mapPrefabs[mapPrefabs.Length - 1]; // Keep Boss as last in array
+            // Spawn the special map (DragonAI) after at least 10 random maps
+            Instantiate(mapPrefabs[mapPrefabs.Length - 1], spawnPosition, Quaternion.identity);
             specialMapSpawned = true;
+            PauseSpawning(); // Pause further spawning until the dragon is defeated
         } else {
-            // Randomly spawn from the first 10 maps
-            obstacleToSpawn = mapPrefabs[Random.Range(0, mapPrefabs.Length - 1)];
+            // Randomly spawn one of the regular maps
+            Instantiate(mapPrefabs[Random.Range(0, mapPrefabs.Length - 1)], spawnPosition, Quaternion.identity);
         }
+    }
 
-        Instantiate(obstacleToSpawn, spawnPosition, Quaternion.identity);
-        mapSpawnCount++;
+    public void PauseSpawning() {
+        isPaused = true;
+    }
+
+    public void ResumeSpawning() {
+        isPaused = false;
     }
 }
