@@ -8,6 +8,7 @@ public class DragonAnimator : MonoBehaviour {
 
     private const string IS_ATTACKING = "IsAttacking";
     private const string IS_ATTACKINGFLAME = "IsAttackingFlame";
+    private const string IS_ATTACKINGCLAW = "IsAttackingClaw";
     private const string IS_DIEING = "IsDieing";
 
     private bool hasDied = false;  // This flag prevents triggering the death animation multiple times
@@ -32,6 +33,8 @@ public class DragonAnimator : MonoBehaviour {
             animator.SetTrigger(IS_ATTACKING);
         } else if (dragonAI.IsAttackingFlame()) {
             animator.SetTrigger(IS_ATTACKINGFLAME);
+        } else if (dragonAI.IsAttackingClaw()) {
+            animator.SetTrigger(IS_ATTACKINGCLAW);
         }
         animator.SetBool(IS_FLYING, dragonEntry.IsFlying());
         animator.SetBool(IS_LANDING, dragonEntry.IsLanding());

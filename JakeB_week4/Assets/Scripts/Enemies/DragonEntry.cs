@@ -6,12 +6,11 @@ public class DragonEntry : MonoBehaviour {
     public float flightSpeed = 3f;
     public Transform landingPoint;
     public float landingDuration = 5f;
+    private DragonAI dragonAI;
 
     //Animations
     private bool isFlying;
     private bool isLanding;
-
-    private DragonAI dragonAI;
 
     void Start() {
         dragonAI = GetComponent<DragonAI>();
@@ -32,7 +31,7 @@ public class DragonEntry : MonoBehaviour {
             yield return null;
         }
 
-        // Simulate landing (you can add more detailed animation here if necessary)
+        //Landing
         isLanding = true;
         yield return new WaitForSeconds(landingDuration);
         isFlying = false;
@@ -42,7 +41,7 @@ public class DragonEntry : MonoBehaviour {
             dragonAI.enabled = true;
         }
 
-        // Optionally, destroy this script if it's no longer needed
+        //destroy this script
         Destroy(this);
     }
 

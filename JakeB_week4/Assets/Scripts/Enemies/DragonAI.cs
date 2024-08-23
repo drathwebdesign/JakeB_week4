@@ -16,7 +16,7 @@ public class DragonAI : MonoBehaviour {
     //Dragon Attacks
 
     // Attack Cooldown
-    public float attackCooldown = 3f;
+    public float attackCooldown = 8f;
     private bool isAttackOnCooldown = false;
 
     public ParticleSystem flameAttackParticles;
@@ -28,6 +28,7 @@ public class DragonAI : MonoBehaviour {
     private bool isDieing;
     private bool isAttacking;
     private bool isAttackingFlame;
+    private bool isAttackingClaw;
 
     void Start() {
         currentHealth = enemyStats.maxHealth;
@@ -111,10 +112,45 @@ public class DragonAI : MonoBehaviour {
         }
     }
 
+/*    // Claw Attack
+    public IEnumerator ClawAttack() {
+        if (isDieing || isAttackOnCooldown) yield break;
 
+        isAttackingClaw = true;
+
+        // Activate the claw collider to apply damage when the player is in range
+        if (clawAttackCollider != null) {
+            clawAttackCollider.enabled = true;
+        }
+
+        yield return new WaitForSeconds(1f); // Duration of the claw attack
+
+        if (clawAttackCollider != null) {
+            clawAttackCollider.enabled = false;
+        }
+
+        isAttackingClaw = false;
+        StartCooldown();
+    }
+
+    // Basic Attack
+    public IEnumerator BasicAttack() {
+        if (isDieing || isAttackOnCooldown) yield break;
+
+        isAttacking = true;
+
+        // Basic attack logic here
+        yield return new WaitForSeconds(1f); // Duration of the basic attack
+
+        isAttacking = false;
+        StartCooldown();
+    }*/
+
+
+    //Generic Damage through Collider
     void OnCollisionEnter(Collision collision) {
         if (collision.transform.tag == "Player") {
-            isAttacking = true;
+            //isAttacking = true;
             {
                 PlayerMovement playerMovement = collision.transform.GetComponent<PlayerMovement>();
                 playerMovement.TakeDamage(enemyStats.damage); // Deal damage based on stats
@@ -139,7 +175,7 @@ public class DragonAI : MonoBehaviour {
         if (isDieing) return; // Stop Die from being called multiple times
 
         isDieing = true;
-        isAttacking = false;
+        //isAttacking = false;
 
         /*        CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
                 {
@@ -178,5 +214,8 @@ public class DragonAI : MonoBehaviour {
     }
     public bool IsAttackingFlame() {
         return isAttackingFlame;
+    }
+    public bool IsAttackingClaw() {
+        return isAttackingClaw;
     }
 }
