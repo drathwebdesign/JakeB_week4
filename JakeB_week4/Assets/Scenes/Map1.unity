@@ -8741,6 +8741,11 @@ PrefabInstance:
       propertyPath: landingPoint
       value: 
       objectReference: {fileID: 2029714914}
+    - target: {fileID: 6756291885056216963, guid: 60d49710779f57a438c487587d285e79,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 7821582881103435196, guid: 60d49710779f57a438c487587d285e79,
         type: 3}
       propertyPath: m_Name

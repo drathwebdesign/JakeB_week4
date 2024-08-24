@@ -95,7 +95,7 @@ public class DragonAI : MonoBehaviour {
     public IEnumerator BasicAttack() {
         if (isDieing) yield break;
         isAttacking = true;
-        isAttackOnCooldown = true;
+        //isAttackOnCooldown = true;
 
         // Perform basic attack logic here
         Debug.Log("Dragon performs basic attack!");
