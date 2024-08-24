@@ -36,6 +36,9 @@ public class PlayerMovement : MonoBehaviour
     //attacking
     public Collider swordCollider;
 
+    //Blocking
+    public ParticleSystem blockEffect;
+
     private bool isGrounded;
     //animation fields
     private bool isJumping;
@@ -52,6 +55,7 @@ public class PlayerMovement : MonoBehaviour
 
         playerControls.Player.Jump.performed += ctx => Jump();
         playerControls.Player.Block.performed += ctx => Block();
+        playerControls.Player.Block.canceled += ctx => StopBlocking();
         playerControls.Player.Attack.performed += ctx => Attack();
 
         swordCollider.enabled = false;
@@ -59,6 +63,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Start() {
         UpdateHealthUI();
+        blockEffect.Stop();
     }
 
     void Update()
@@ -69,6 +74,34 @@ public class PlayerMovement : MonoBehaviour
         HandleMovement();
     }
 
+    // Blocking
+    void Block() {
+        if (isBlocking) return;
+
+        isBlocking = true;
+
+        // Activate the block particle effect
+        if (blockEffect != null) {
+            blockEffect.Play();
+        }
+
+        // Stop movement and disable jumping
+        rb.velocity = Vector3.zero; // Stop all movement
+        moveSpeed = 0f;
+    }
+
+    void StopBlocking() {
+        isBlocking = false;
+
+        // Deactivate the block particle effect
+        if (blockEffect != null) {
+            blockEffect.Stop();
+        }
+
+        // Restore movement speed 
+        moveSpeed = 4f; 
+    }
+
     void HandleMovement() {
         inputVector = playerControls.Player.Move.ReadValue<Vector2>();
         Vector3 moveDir = new Vector3(inputVector.x, 0f, inputVector.y);
@@ -76,6 +109,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void Jump() {
+        if (isBlocking) return; // Prevent jumping while blocking
         if (isGrounded) {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isJumping = true;
@@ -130,10 +164,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void Block() {
-        isBlocking = true;
-    }
-
+    //Attacking
     void Attack() {
         isAttacking = true;
         StartCoroutine(AttackCoroutine());
@@ -141,13 +172,18 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator AttackCoroutine() {
         swordCollider.enabled = true; // Enable the sword collider
-        yield return new WaitForSeconds(0.5f); // Adjust duration as needed for the attack animation
+        yield return new WaitForSeconds(1f); // Adjust duration as needed for the attack animation
         swordCollider.enabled = false; // Disable the sword collider after the attack
         isAttacking = false; // Reset attacking state
     }
 
     public void TakeDamage(int damage) {
         if (!isInvulnerable) {
+            if (isBlocking) {
+                // No damage taken while blocking
+                return;
+            }
+
             currentHealth -= damage;
 
             if (currentHealth <= 0) {

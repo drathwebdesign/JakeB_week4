@@ -6,18 +6,21 @@ public class BackgroundScrollOffset : MonoBehaviour
 {
 
     public float scrollSpeed =0.02f;
-
-    //public Renderer bgRenderer;
-
-    void Start()
-    {
-        
-    }
+    private bool isScrolling = true;
 
 
     void Update()
     {
-        GetComponent<MeshRenderer>().material.mainTextureOffset = new Vector2(Time.time * scrollSpeed, 0);
-        //bgRenderer.material.mainTextureOffset += new Vector2(scrollSpeed * Time.deltaTime, 0);
+        if (isScrolling) {
+            GetComponent<MeshRenderer>().material.mainTextureOffset = new Vector2(Time.time * scrollSpeed, 0);
+        }
+    }
+
+    public void EnableScroll() {
+        isScrolling = true;
+    }
+
+    public void DisableScroll() {
+        isScrolling = false;
     }
 }

@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 897c8671acbaa494fb72a1c426238e12, type: 3}
   m_Name: EnemyStats_Orc
   m_EditorClassIdentifier: 
-  maxHealth: 4
+  maxHealth: 12
   damage: 1

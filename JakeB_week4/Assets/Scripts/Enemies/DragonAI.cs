@@ -8,7 +8,10 @@ public class DragonAI : MonoBehaviour {
     public EnemyStats enemyStats;
     private int currentHealth;
     private Rigidbody rb;
+
     private SpawnManager spawnManager;
+    private BackgroundScrollOffset backgroundScroll;
+
     //HP slider
     public Slider bossHealthSlider;
     private CanvasGroup sliderCanvasGroup;
@@ -16,9 +19,11 @@ public class DragonAI : MonoBehaviour {
     //Dragon Attacks
 
     // Attack Cooldown
+    public float basicAttackRange = 10f;
     public float attackCooldown = 8f;
     private bool isAttackOnCooldown = false;
-
+    public Collider[] clawAttackColliders; // Add a collider for the claw attack
+    private Transform playerTransform; // To track the player
     public ParticleSystem flameAttackParticles;
 
 
@@ -33,24 +38,32 @@ public class DragonAI : MonoBehaviour {
     void Start() {
         currentHealth = enemyStats.maxHealth;
         rb = GetComponent<Rigidbody>();
+        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+
         // Find the SpawnManager in the scene
         spawnManager = FindObjectOfType<SpawnManager>();
-        sliderCanvasGroup = bossHealthSlider.GetComponent<CanvasGroup>();
 
-        // Find the DragonHealthSlider in the scene and initialize it
+        // Find the BossHealthSlider in the scene
         bossHealthSlider = GameObject.Find("BossHealthSlider").GetComponent<Slider>();
         if (bossHealthSlider != null) {
             bossHealthSlider.maxValue = enemyStats.maxHealth; // Set the max value to Dragon's max health
             bossHealthSlider.value = currentHealth; // Set the initial value
-            // Hide the slider initially by setting the alpha to 0
-            if (sliderCanvasGroup != null) {
-                sliderCanvasGroup.alpha = 1; // Fully transparent
-            }
-        }
+            sliderCanvasGroup = bossHealthSlider.GetComponent<CanvasGroup>();
 
-        // Pause spawning as soon as the DragonAI is spawned
-        if (spawnManager != null) {
-            spawnManager.PauseSpawning();
+            // Show the slider initially by setting the alpha to 1
+            if (sliderCanvasGroup != null) {
+                sliderCanvasGroup.alpha = 1; // Fully visible
+            }
+
+            // Pause spawning as soon as the DragonAI is spawned
+            if (spawnManager != null) {
+                spawnManager.PauseSpawning();
+            }
+            // Disable the background scroll when the dragon spawns
+            backgroundScroll = FindObjectOfType<BackgroundScrollOffset>();
+            if (backgroundScroll != null) {
+                backgroundScroll.DisableScroll();
+            }
         }
     }
 
@@ -61,18 +74,43 @@ public class DragonAI : MonoBehaviour {
         if (bossHealthSlider != null) {
             bossHealthSlider.value = currentHealth;
         }
-        // Here you can add logic to decide when to call different attacks
-        // For now, we just call the flame attack manually (for example purposes)
         if (!isAttackOnCooldown) {
-            StartCoroutine(FlameAttack());
+            float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+
+            if (distanceToPlayer <= basicAttackRange) {
+                StartCoroutine(BasicAttack());
+            } else {
+                int attackChoice = Random.Range(0, 2); // 0: Flame, 1: Claw
+                if (attackChoice == 0) {
+                    StartCoroutine(FlameAttack());
+                } else if (attackChoice == 1) {
+                    StartCoroutine(ClawAttack());
+                }
+            }
         }
     }
 
     // DRAGON ATTACKS
+    // Basic Attack
+    public IEnumerator BasicAttack() {
+        if (isDieing) yield break;
+        isAttacking = true;
+        isAttackOnCooldown = true;
+
+        // Perform basic attack logic here
+        Debug.Log("Dragon performs basic attack!");
+
+        yield return new WaitForSeconds(1.2f); // Duration of the basic attack
+
+        isAttacking = false;
+    }
 
     //Flame Attack
     public IEnumerator FlameAttack() {
         if (isDieing || isAttackOnCooldown) yield break; // Do nothing if already dieing
+        isAttackingFlame = true;
+        isAttackOnCooldown = true;
+        Debug.Log("Fire attack!");
 
         // Activate the flame attack particle system
         if (flameAttackParticles != null) {
@@ -81,9 +119,7 @@ public class DragonAI : MonoBehaviour {
             flameAttackParticles.Play();
         }
 
-        isAttackingFlame = true;
-
-        yield return new WaitForSeconds(3f); // Duration of the flame attack
+        yield return new WaitForSeconds(3f); // Duration
 
         // Deactivate the particle system after the attack
         if (flameAttackParticles != null) {
@@ -91,16 +127,10 @@ public class DragonAI : MonoBehaviour {
             emission.rateOverTime = 0f; // Stop emitting new particles
             flameAttackParticles.Stop();
         }
-        // Set attack on cooldown
-        isAttackOnCooldown = true;
         isAttackingFlame = false;
-
-        // Wait for the cooldown period before allowing another attack
-        yield return new WaitForSeconds(attackCooldown);
-
-        isAttackOnCooldown = false;
+        StartCooldown();
     }
-
+    //Fire Damage method
     public void OnParticleCollision(GameObject other) {
         Debug.Log("Particle collided with: " + other.name);
         if (other.CompareTag("Player")) {
@@ -112,40 +142,45 @@ public class DragonAI : MonoBehaviour {
         }
     }
 
-/*    // Claw Attack
+    // Claw Attack
     public IEnumerator ClawAttack() {
         if (isDieing || isAttackOnCooldown) yield break;
 
         isAttackingClaw = true;
+        isAttackOnCooldown = true;
+        Debug.Log("Claw attack!");
 
-        // Activate the claw collider to apply damage when the player is in range
-        if (clawAttackCollider != null) {
-            clawAttackCollider.enabled = true;
-        }
+        // Activate all claw colliders
+/*        foreach (Collider collider in clawAttackColliders) {
+            if (collider != null) {
+                collider.enabled = true;
+            }
+        }*/
 
-        yield return new WaitForSeconds(1f); // Duration of the claw attack
+        yield return new WaitForSeconds(3f); // Duration of the claw attack
 
-        if (clawAttackCollider != null) {
-            clawAttackCollider.enabled = false;
-        }
+        // Deactivate all claw colliders
+/*        foreach (Collider collider in clawAttackColliders) {
+            if (collider != null) {
+                collider.enabled = false;
+            }
+        }*/
 
         isAttackingClaw = false;
+
         StartCooldown();
     }
 
-    // Basic Attack
-    public IEnumerator BasicAttack() {
-        if (isDieing || isAttackOnCooldown) yield break;
+    //Attack Cooldowns
+    void StartCooldown() {
+        isAttackOnCooldown = true;
+        StartCoroutine(CooldownCoroutine());
+    }
 
-        isAttacking = true;
-
-        // Basic attack logic here
-        yield return new WaitForSeconds(1f); // Duration of the basic attack
-
-        isAttacking = false;
-        StartCooldown();
-    }*/
-
+    IEnumerator CooldownCoroutine() {
+        yield return new WaitForSeconds(attackCooldown);
+        isAttackOnCooldown = false;
+    }
 
     //Generic Damage through Collider
     void OnCollisionEnter(Collision collision) {
@@ -160,7 +195,7 @@ public class DragonAI : MonoBehaviour {
 
     // Method to take damage
     public void TakeDamage(int damage, Vector3 knockbackDirection, float knockbackForce) {
-        if (isDieing) return; // Do nothing if the is already Dieing
+        if (!this.enabled || isDieing) return; // Do nothing if the AI script is disabled or the dragon is dying
 
         currentHealth -= damage;
         //knockback
@@ -175,21 +210,21 @@ public class DragonAI : MonoBehaviour {
         if (isDieing) return; // Stop Die from being called multiple times
 
         isDieing = true;
-        //isAttacking = false;
-
-        /*        CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
-                {
-                    capsuleCollider.enabled = false;
-                }*/
 
         DropItems();
         // Re-enable spawning of maps after DragonAI is destroyed
         if (spawnManager != null) {
             spawnManager.ResumeSpawning();
         }
+
         // Hide the health slider once the Dragon is defeated
         if (sliderCanvasGroup != null) {
             sliderCanvasGroup.alpha = 0; // Make the slider invisible again
+        }
+
+        // Re-enable the background scroll when the dragon dies
+        if (backgroundScroll != null) {
+            backgroundScroll.EnableScroll();
         }
 
         Destroy(gameObject, 5f);
@@ -203,7 +238,6 @@ public class DragonAI : MonoBehaviour {
             Instantiate(itemPrefab, spawnPosition, itemPrefab.transform.rotation);
         }
     }
-
 
     //Animation fields
     public bool IsDieing() {

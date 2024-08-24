@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: WeaponStats_BaseSword
   m_EditorClassIdentifier: 
   damage: 2
-  knockBack: 5
+  knockBack: 2

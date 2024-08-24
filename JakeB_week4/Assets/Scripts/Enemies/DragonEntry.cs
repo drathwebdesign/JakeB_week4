@@ -14,13 +14,14 @@ public class DragonEntry : MonoBehaviour {
 
     void Start() {
         dragonAI = GetComponent<DragonAI>();
-        if (dragonAI != null) {
-            // Disable the AI script while flying
-            dragonAI.enabled = false;
-        }
 
         // Start the entrance sequence
-        StartCoroutine(FlyAndLand());
+        if (landingPoint != null) {
+            StartCoroutine(FlyAndLand());
+        }
+    }
+    public void SetLandingPoint(Transform point) {
+        landingPoint = point;
     }
 
     private IEnumerator FlyAndLand() {
